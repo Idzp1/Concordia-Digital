@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    
+    <link rel="icon" type="image/png" href="Concordia.png"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concordia Digital Center - Servicios Digitales y Tecnológicos en Concordia, Sinaloa.</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --white: #fafafa;
+            --gray-dark: #1a1a1a;
+            --gray-mid: #404040;
+            --gray-light: #d4d4d4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1000;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 10, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--black);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--white);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0 4rem;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.03) 49%, rgba(255,255,255,0.03) 51%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.03) 49%, rgba(255,255,255,0.03) 51%, transparent 52%);
+            background-size: 60px 60px;
+            animation: bgMove 20s linear infinite;
+        }
+
+        @keyframes bgMove {
+            from { background-position: 0 0; }
+            to { background-position: 60px 60px; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            animation: fadeInUp 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 800;
+            line-height: 0.95;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero h1 .outline {
+            color: transparent;
+            -webkit-text-stroke: 2px var(--white);
+            text-stroke: 2px var(--white);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            color: var(--gray-light);
+            line-height: 1.8;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--white);
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.85rem;
+            border: 2px solid var(--white);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            animation: fadeInUp 1s ease-out 0.7s backwards;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .cta-button:hover {
+            color: var(--white);
+        }
+
+        .cta-button:hover::before {
+            left: 0;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 8rem 4rem;
+            background: var(--white);
+            color: var(--black);
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--gray-mid);
+            margin-bottom: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: var(--black);
+            color: var(--white);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--black);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--white);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gray-mid);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-number {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            opacity: 0.1;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .service-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--gray-light);
+        }
+
+        /* About Section */
+        .about {
+            padding: 8rem 4rem;
+            background: var(--gray-dark);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .about-content h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+            color: var(--gray-light);
+        }
+
+        .about-features {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .feature {
+            display: flex;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--white);
+            color: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+        }
+
+        .feature-text h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .feature-text p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 8rem 4rem;
+            background: var(--white);
+            color: var(--black);
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .contact p {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: var(--gray-mid);
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            text-align: left;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--gray-mid);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 4rem;
+            background: var(--black);
+            color: var(--gray-light);
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer p {
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            header {
+                padding: 1.5rem 2rem;
+            }
+
+            nav {
+                gap: 1.5rem;
+            }
+
+            .hero {
+                padding: 0 2rem;
+            }
+
+            .services {
+                padding: 4rem 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about {
+                grid-template-columns: 1fr;
+                padding: 4rem 2rem;
+                gap: 3rem;
+            }
+
+            .contact {
+                padding: 4rem 2rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 2rem;
+                align-items: center;
+            }
+
+            footer {
+                padding: 2rem;
+            }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.3);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--white);
+            border-radius: 50%;
+            animation: scrollDot 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes scrollDot {
+            0% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(30px); }
+            100% { transform: translateX(-50%) translateY(60px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            Concordia Digital
+        </div>
+        <nav>
+            <a href="#servicios">Servicios</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1>
+                SERVICIOS<br>
+                <span class="outline">TECNOLÓGICOS</span><br>
+                A DOMICILIO
+            </h1>
+            <p class="hero-subtitle">
+                Técnico de confianza en Concordia, Sinaloa, México. Ofrezco servicios tecnológicos a domicilio, 
+                pensados para ayudarte sin que tengas que salir de casa ni "batallar" con la tecnología.
+            </p>
+            <a href="#contacto" class="cta-button">Solicitar Servicio</a>
+        </div>
+        <div class="scroll-indicator"></div>
+    </section>
+
+    <section class="services" id="servicios">
+        <h2 class="section-title">Servicios</h2>
+        <p class="section-subtitle">Lo que puedo hacer por ti</p>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-number">01</div>
+                <h3>Reparación de PC</h3>
+                <p>Diagnóstico y reparación de problemas de hardware y software. Desde pantallas dañadas hasta sistemas lentos.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-number">02</div>
+                <h3>Mantenimiento Preventivo</h3>
+                <p>Limpieza física y optimización de sistemas para mantener tus equipos funcionando como nuevos.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-number">03</div>
+                <h3>Instalación de Software</h3>
+                <p>Instalación y configuración de programas, sistemas operativos y aplicaciones especializadas.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-number">04</div>
+                <h3>Soporte Técnico</h3>
+                <p>Asesoría y solución de problemas tecnológicos. Te ayudo a entender y usar mejor tu equipo.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-number">05</div>
+                <h3>Recuperación de Datos</h3>
+                <p>Rescate de información importante de discos dañados o sistemas que no arrancan.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-number">06</div>
+                <h3>Configuración de Redes</h3>
+                <p>Instalación y optimización de redes WiFi, cableadas y solución de problemas de conectividad.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="nosotros">
+        <div class="about-content">
+            <h2>Servicio de confianza en Concordia</h2>
+            <p>
+                Soy un técnico de confianza especializado en servicios tecnológicos a domicilio. 
+                Mi objetivo es hacer la tecnología accesible para todos, ofreciendo soluciones 
+                profesionales sin que tengas que salir de casa.
+            </p>
+            <p>
+                Con experiencia en reparación, mantenimiento y soporte técnico, me enfoco en 
+                brindarte un servicio personalizado que resuelva tus problemas de forma eficiente.
+            </p>
+        </div>
+        <div class="about-features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">
+                    <h4>Servicio Rápido</h4>
+                    <p>Respuesta ágil y soluciones eficientes para que vuelvas a trabajar lo antes posible.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏠</div>
+                <div class="feature-text">
+                    <h4>A Domicilio</h4>
+                    <p>Voy hasta tu ubicación para brindarte el servicio sin que tengas que moverte.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                    <h4>Confiable</h4>
+                    <p>Trabajo profesional con garantía. Tu confianza es mi prioridad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contacto">
+        <h2>¿Necesitas ayuda?</h2>
+        <p>Contáctame y agenda tu servicio.😉 </p>
+        <a href="#" class="cta-button">Enviar Mensaje</a>
+        <div class="contact-info">
+            <div class="contact-item">
+                <div class="contact-label">Ubicación.</div>
+                <div class="contact-value">Concordia, Sinaloa.</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-label">Empresa.</div>
+                <div class="contact-value">Concordia Digital.</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-label">Servicios.</div>
+                <div class="contact-value">Lun - Sáb.</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Concordia Digital. Todos los derechos reservados. | Servicios Digitales y Tecnológicos en Concordia, Sinaloa.</p>
+    </footer>
+</body>
+</html>
