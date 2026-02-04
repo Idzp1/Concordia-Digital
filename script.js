@@ -175,7 +175,7 @@ function handleFormSubmit(event) {
         
         // Por ahora, mostrar mensaje de éxito y preparar WhatsApp
         const whatsappMessage = `Hola! Soy ${formData.name}. ${formData.message}. Mi teléfono es: ${formData.phone}`;
-        const whatsappURL = `https://wa.me/526691234567?text=${encodeURIComponent(whatsappMessage)}`;
+        const whatsappURL = `https://wa.me/526691517346?text=${encodeURIComponent(whatsappMessage)}`;
         
         showMessage('¡Mensaje preparado! Te redirigiremos a WhatsApp...', 'success');
         
