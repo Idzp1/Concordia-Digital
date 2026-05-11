@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <!-- SEO Meta Tags -->
-    <title>Concordia Digital - Servicios Digitales y Tecnológicos en Concordia, Sinaloa</title>
+    <title>Concordia Digital - Servicios Digitales y Tecnológicos en Concordia, Sinaloa.</title>
     <meta name="description" content="Servicios técnicos y digitales profesionales en Concordia, Sinaloa. Reparación de computadoras, mantenimiento preventivo, soporte técnico a domicilio. Tu técnico de confianza.">
     <meta name="keywords" content="reparación computadoras concordia, técnico informático sinaloa, soporte técnico, mantenimiento PC, recuperación datos, configuración redes">
     <meta name="author" content="Concordia Digital">
@@ -71,7 +71,7 @@
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            <span class="hours-text">Lun - Sáb: 9:00 AM - 6:00 PM</span>
+            <span class="hours-text">Lun - Sáb: 9:00 AM - 5:00 PM</span>
             <span class="status-indicator" id="statusIndicator">
                 <span class="status-dot"></span>
                 <span class="status-text">Cerrado</span>
@@ -88,6 +88,19 @@
        aria-label="Contactar por WhatsApp">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M16 0C7.163 0 0 7.163 0 16C0 18.8367 0.746667 21.4933 2.05333 23.8L0.106667 30.9333C-0.0266667 31.4533 0.546667 31.8933 1.06667 31.76L8.2 29.8133C10.5067 31.12 13.1633 31.8667 16 31.8667C24.837 31.8667 32 24.7037 32 15.8667C32 7.02967 24.837 0 16 0ZM23.5467 22.1067C23.1733 23.1467 21.5467 24.0267 20.6133 24.16C19.9733 24.2533 19.1467 24.32 16.32 23.2267C12.64 21.7867 10.2933 18.08 10.1067 17.84C9.92 17.6 8.53333 15.7867 8.53333 13.9067C8.53333 12.0267 9.49333 11.1067 9.86667 10.72C10.24 10.3333 10.6667 10.24 10.9067 10.24C11.1467 10.24 11.3867 10.24 11.6 10.2533C11.8267 10.2667 12.1333 10.16 12.4267 10.88C12.72 11.6 13.4667 13.48 13.5467 13.64C13.6267 13.8 13.7067 14.0133 13.5733 14.2533C13.44 14.4933 13.36 14.6267 13.1733 14.8267C12.9867 15.0267 12.8133 15.1733 12.6267 15.3867C12.4533 15.5733 12.2667 15.7733 12.48 16.1467C12.6933 16.52 13.4533 17.7467 14.56 18.72C15.9867 19.9733 17.1733 20.3333 17.5467 20.4933C17.92 20.6533 18.1733 20.6133 18.3867 20.3867C18.6 20.16 19.32 19.3333 19.56 18.96C19.8 18.5867 20.04 18.6533 20.3867 18.7733C20.7333 18.8933 22.6133 19.8267 22.9867 20.0133C23.36 20.2 23.6 20.2933 23.68 20.4533C23.76 20.6133 23.76 21.3333 23.5467 22.1067Z" fill="white"/>
+        </svg>
+    </a>
+
+    <!-- Botón flotante de Messenger -->
+    <a href="https://m.me/concordiadigital" 
+       class="messenger-float" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       title="Contactar por Messenger"
+       aria-label="Contactar por Messenger">
+        <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M24 4C13 4 4 12.5 4 23c0 5.8 2.6 11 6.8 14.6V44l6.2-3.4c1.6.4 3.3.6 5 .6 11 0 20-8.5 20-19S35 4 24 4z" fill="white"/>
+            <path d="M26.2 29.4l-5.1-5.4-9.9 5.4 10.9-11.6 5.2 5.4 9.8-5.4-10.9 11.6z" fill="#0078FF"/>
         </svg>
     </a>
 
@@ -129,8 +142,7 @@
                     <span class="outline">A mi web.</span>
                 </h1>
                 <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
-                    👋🏼 Hola, ¿Qué tal? soy tu técnico de confianza en Concordia, Sinaloa, México. Ofrezco servicios básicos tecnológicos a domicilio, 
-                    pensados para ayudarte sin que tengas que salir de casa ni "batallar" con la tecnología.
+                    <span id="typewriter-text"></span><span class="typewriter-cursor">|</span>
                 </p>
                 <a href="#contacto" class="cta-button" data-aos="fade-up" data-aos-delay="400">Solicita un servicio aquí.</a>
             </div>
@@ -254,11 +266,7 @@
                         <div class="stat-label">Disponibilidad</div>
                         <p class="stat-description">Tu tecnología no descansa, yo tampoco. Apoyo cuando lo necesites.</p>
                     </div>
-                    <div class="stat-item" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="stat-number">+100</div>
-                        <div class="stat-label">Clientes Satisfechos</div>
-                        <p class="stat-description">Experiencia comprobada sirviendo a la comunidad de Concordia y zonas aledañas.</p>
-                    </div>
+
                 </div>
             </div>
         </section>

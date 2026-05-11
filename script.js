@@ -31,6 +31,9 @@ function initializeApp() {
     // Actualizar estado de horario
     updateBusinessStatus();
     
+    // Inicializar animación typewriter del hero
+    initTypewriter();
+    
     // Log de bienvenida
     logWelcomeMessage();
 }
@@ -717,6 +720,43 @@ function logWelcomeMessage() {
     ║   y accesibilidad                    ║
     ╚═══════════════════════════════════════╝
     `, 'color: #00ff00; font-family: monospace;');
+}
+
+// ============================================
+// TYPEWRITER HERO
+// ============================================
+function initTypewriter() {
+    const el = document.getElementById('typewriter-text');
+    const cursor = document.querySelector('.typewriter-cursor');
+    if (!el) return;
+
+    const text = '👋🏼 Hola, ¿Qué tal? soy tu técnico de confianza en Concordia, Sinaloa, México. Ofrezco servicios básicos tecnológicos a domicilio, pensados para ayudarte sin que tengas que salir de casa ni "batallar" con la tecnología.';
+
+    let i = 0;
+    // Esperar a que la animación AOS del párrafo termine (~200ms delay + 800ms duración)
+    const startDelay = 1100;
+
+    setTimeout(() => {
+        function type() {
+            if (i < text.length) {
+                el.textContent += text.charAt(i);
+                i++;
+                // Velocidad variable: más rápido en espacios, normal en letras
+                const char = text.charAt(i);
+                const speed = (char === ' ' || char === ',') ? 30 : 45;
+                setTimeout(type, speed);
+            } else {
+                // Al terminar, ocultar el cursor parpadeante después de 2s
+                if (cursor) {
+                    setTimeout(() => {
+                        cursor.style.animation = 'none';
+                        cursor.style.opacity = '0';
+                    }, 2000);
+                }
+            }
+        }
+        type();
+    }, startDelay);
 }
 
 // ============================================

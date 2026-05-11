@@ -218,11 +218,62 @@ body::before {
 }
 
 /* ============================================ */
+/* Botón Flotante de Messenger */
+/* ============================================ */
+.messenger-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 100px;
+    right: 30px;
+    background: linear-gradient(135deg, #0078FF, #00B2FF);
+    color: #FFF;
+    border-radius: 50%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 15px rgba(0, 120, 255, 0.4);
+    z-index: 1001;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+}
+
+.messenger-float:hover,
+.messenger-float:focus {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 2px 2px 25px rgba(0, 120, 255, 0.65);
+    outline: 2px solid rgba(0, 120, 255, 0.5);
+}
+
+.messenger-float:active {
+    transform: scale(1.05);
+}
+
+/* ============================================ */
+/* Cursor typewriter */
+/* ============================================ */
+.typewriter-cursor {
+    display: inline-block;
+    animation: blink-cursor 0.75s step-end infinite;
+    font-weight: 700;
+    color: var(--white);
+    margin-left: 1px;
+}
+
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+/* ============================================ */
 /* Botón Scroll to Top */
 /* ============================================ */
 .scroll-to-top {
     position: fixed;
-    bottom: 100px;
+    bottom: 170px;
     right: 30px;
     width: 50px;
     height: 50px;
@@ -1245,10 +1296,17 @@ footer {
         font-size: 26px;
     }
 
+    .messenger-float {
+        width: 54px;
+        height: 54px;
+        bottom: 88px;
+        right: 20px;
+    }
+
     .scroll-to-top {
         width: 45px;
         height: 45px;
-        bottom: 85px;
+        bottom: 155px;
         right: 20px;
     }
     
@@ -1387,6 +1445,7 @@ footer {
 /* ============================================ */
 @media print {
     .whatsapp-float,
+    .messenger-float,
     .scroll-to-top,
     .menu-toggle,
     .page-loader,
