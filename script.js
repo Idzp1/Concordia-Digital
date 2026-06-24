@@ -1,71 +1,27 @@
 // ============================================
-// CONFIGURACIÓN GLOBAL
+// CONCORDIA DIGITAL — script.js v3.0
 // ============================================
+
 const CONFIG = {
-    SUBMIT_COOLDOWN: 5000, // 5 segundos
     WHATSAPP_NUMBER: '526691517346',
-    ANIMATION_DURATION: 800,
-    TOAST_DURATION: 3000
+    TOAST_DURATION: 3500,
+    SUBMIT_COOLDOWN: 5000
 };
 
 // ============================================
-// INICIALIZACIÓN DE LA PÁGINA
+// INIT
 // ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
+document.addEventListener('DOMContentLoaded', initializeApp);
 
 function initializeApp() {
-    // Ocultar loading screen
     hideLoader();
-    
-    // Inicializar AOS (Animate On Scroll)
     initializeAOS();
-    
-    // Inicializar observers
-    initializeIntersectionObservers();
-    
-    // Inicializar event listeners
-    initializeEventListeners();
-    
-    // Actualizar estado de horario
     updateBusinessStatus();
-    
-    // Inicializar animación typewriter del hero
-    initTypewriter();
-    
-    // Log de bienvenida
+    initScrollBehaviors();
+    initSmoothScroll();
+    initReadingProgress();
+    initQuickChips();
     logWelcomeMessage();
-}
-
-// ============================================
-// ACTUALIZAR ESTADO DE NEGOCIO (ABIERTO/CERRADO)
-// ============================================
-function updateBusinessStatus() {
-    const statusIndicator = document.getElementById('statusIndicator');
-    if (!statusIndicator) return;
-    
-    const now = new Date();
-    const day = now.getDay();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const currentTime = hours + minutes / 60;
-    
-    const isWeekday = day >= 1 && day <= 6;
-    const isOpenHours = currentTime >= 9 && currentTime < 18;
-    const isOpen = isWeekday && isOpenHours;
-    
-    const statusText = statusIndicator.querySelector('.status-text');
-    
-    if (isOpen) {
-        statusIndicator.classList.add('open');
-        statusText.textContent = 'Abierto';
-    } else {
-        statusIndicator.classList.remove('open');
-        statusText.textContent = 'Cerrado';
-    }
-    
-    setTimeout(updateBusinessStatus, 60000);
 }
 
 // ============================================
@@ -75,305 +31,387 @@ function hideLoader() {
     window.addEventListener('load', () => {
         const loader = document.getElementById('pageLoader');
         if (loader) {
-            setTimeout(() => {
-                loader.classList.add('hidden');
-            }, 500);
+            setTimeout(() => loader.classList.add('hidden'), 600);
         }
     });
 }
 
 // ============================================
-// INICIALIZACIÓN DE ANIMACIONES AOS
+// BUSINESS STATUS
+// ============================================
+function updateBusinessStatus() {
+    const statusIndicator = document.getElementById('statusIndicator');
+    if (!statusIndicator) return;
+
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun, 6=Sat
+    const h = now.getHours() + now.getMinutes() / 60;
+    const isOpen = (day >= 1 && day <= 6) && (h >= 9 && h < 18);
+
+    const dot = statusIndicator.querySelector('.status-dot');
+    const txt = statusIndicator.querySelector('.status-text');
+
+    if (isOpen) {
+        statusIndicator.classList.add('open');
+        txt.textContent = 'Abierto';
+    } else {
+        statusIndicator.classList.remove('open');
+        txt.textContent = 'Cerrado';
+    }
+
+    setTimeout(updateBusinessStatus, 60000);
+}
+
+// ============================================
+// AOS ANIMATIONS
 // ============================================
 function initializeAOS() {
     if (typeof AOS !== 'undefined') {
         AOS.init({
-            duration: CONFIG.ANIMATION_DURATION,
-            easing: 'ease-out',
+            duration: 700,
+            easing: 'ease-out-cubic',
             once: true,
-            offset: 100,
-            disable: function() {
-                // Desactivar en dispositivos de bajo rendimiento
-                return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            }
+            offset: 80,
+            disable: () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
         });
     }
 }
 
 // ============================================
-// MENÚ RESPONSIVE
+// PROMO BAR
+// ============================================
+function closePromoBar() {
+    const bar = document.getElementById('promoBar');
+    const hoursBanner = document.getElementById('hoursBanner');
+    const header = document.getElementById('mainHeader');
+    if (bar) {
+        bar.classList.add('hidden');
+        // Adjust header positions
+        if (hoursBanner) hoursBanner.style.top = '0px';
+        if (header) header.style.top = '30px';
+        sessionStorage.setItem('promoClosed', '1');
+    }
+}
+
+// On load, check if promo was closed
+(function checkPromo() {
+    if (sessionStorage.getItem('promoClosed')) {
+        const bar = document.getElementById('promoBar');
+        const hoursBanner = document.getElementById('hoursBanner');
+        const header = document.getElementById('mainHeader');
+        if (bar) bar.classList.add('hidden');
+        if (hoursBanner) hoursBanner.style.top = '0px';
+        if (header) header.style.top = '30px';
+    }
+})();
+
+// ============================================
+// READING PROGRESS BAR
+// ============================================
+function initReadingProgress() {
+    const bar = document.getElementById('readingProgress');
+    if (!bar) return;
+
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        bar.style.width = Math.min(progress, 100) + '%';
+    }, { passive: true });
+}
+
+// ============================================
+// SCROLL BEHAVIORS (header, scroll-to-top)
+// ============================================
+function initScrollBehaviors() {
+    const header = document.getElementById('mainHeader');
+    const scrollTopBtn = document.getElementById('scrollToTop');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+        const current = window.scrollY;
+
+        // Header scrolled state
+        if (header) {
+            header.classList.toggle('scrolled', current > 80);
+        }
+
+        // Scroll to top button
+        if (scrollTopBtn) {
+            scrollTopBtn.classList.toggle('visible', current > 400);
+        }
+
+        lastScroll = current;
+    }, { passive: true });
+
+    if (scrollTopBtn) {
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+}
+
+// ============================================
+// SMOOTH SCROLL
+// ============================================
+function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+            const target = document.querySelector(href);
+            if (!target) return;
+            e.preventDefault();
+
+            const headerOffset = 90;
+            const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+            window.scrollTo({ top, behavior: 'smooth' });
+            closeMenu();
+        });
+    });
+}
+
+// ============================================
+// QUICK CHIPS → scroll to service card
+// ============================================
+function initQuickChips() {
+    document.querySelectorAll('.quick-chip').forEach(chip => {
+        chip.addEventListener('click', function (e) {
+            e.preventDefault();
+            const serviceId = this.dataset.service;
+            const servicesSection = document.getElementById('servicios');
+            if (!servicesSection) return;
+
+            // Scroll to services section
+            const top = servicesSection.getBoundingClientRect().top + window.scrollY - 90;
+            window.scrollTo({ top, behavior: 'smooth' });
+
+            // After scroll, highlight the matching card
+            setTimeout(() => {
+                highlightServiceByType(serviceId);
+            }, 600);
+        });
+    });
+}
+
+function highlightServiceByType(serviceType) {
+    const cards = document.querySelectorAll('.service-card');
+    cards.forEach(card => {
+        const cta = card.querySelector('.service-cta');
+        if (cta && cta.getAttribute('onclick') && cta.getAttribute('onclick').includes(serviceType)) {
+            // Open this card
+            if (!card.classList.contains('active')) {
+                toggleService(card);
+            }
+            // Brief highlight
+            card.style.borderColor = 'rgba(255,255,255,0.5)';
+            card.style.transition = 'border-color 0.3s ease';
+            setTimeout(() => { card.style.borderColor = ''; }, 1500);
+        }
+    });
+}
+
+// ============================================
+// NAVIGATION MENU
 // ============================================
 function toggleMenu() {
     const nav = document.getElementById('mainNav');
     const toggle = document.querySelector('.menu-toggle');
     const isActive = nav.classList.contains('active');
-    
+
     nav.classList.toggle('active');
     toggle.classList.toggle('active');
-    
-    // Actualizar aria-expanded
     toggle.setAttribute('aria-expanded', !isActive);
-    
-    // Prevenir scroll cuando el menú está abierto
-    if (!isActive) {
-        document.body.style.overflow = 'hidden';
-    } else {
-        document.body.style.overflow = '';
-    }
+    document.body.style.overflow = isActive ? '' : 'hidden';
 }
 
 function closeMenu() {
     const nav = document.getElementById('mainNav');
     const toggle = document.querySelector('.menu-toggle');
-    
+    if (!nav) return;
     nav.classList.remove('active');
     toggle.classList.remove('active');
     toggle.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
 }
 
-// Cerrar menú cuando se hace clic fuera de él
-document.addEventListener('click', function(event) {
+// Close on outside click
+document.addEventListener('click', function (e) {
     const nav = document.getElementById('mainNav');
-    const toggle = document.querySelector('.menu-toggle');
     const header = document.querySelector('header');
-    
-    if (!header.contains(event.target) && nav.classList.contains('active')) {
+    if (nav && header && !header.contains(e.target) && nav.classList.contains('active')) {
         closeMenu();
     }
 });
 
-// Cerrar menú con la tecla Escape
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        const nav = document.getElementById('mainNav');
-        if (nav.classList.contains('active')) {
-            closeMenu();
-        }
-    }
+// Close on Escape
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeMenu();
 });
 
 // ============================================
-// SMOOTH SCROLL PARA NAVEGACIÓN
+// SERVICE CARDS (accordion)
 // ============================================
-function initializeEventListeners() {
-    const links = document.querySelectorAll('nav a[href^="#"], a.cta-button[href^="#"]');
-    
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                const headerOffset = 80;
-                const elementPosition = targetSection.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
-                
-                // Cerrar menú móvil si está abierto
-                closeMenu();
-                
-                // Establecer foco en la sección
-                targetSection.setAttribute('tabindex', '-1');
-                targetSection.focus();
+function toggleService(card) {
+    const wasActive = card.classList.contains('active');
+
+    // Close all
+    document.querySelectorAll('.service-card').forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-expanded', 'false');
+    });
+
+    if (!wasActive) {
+        card.classList.add('active');
+        card.setAttribute('aria-expanded', 'true');
+    }
+}
+
+// Keyboard support for service cards
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleService(this);
             }
         });
     });
-}
+});
 
 // ============================================
-// BOTÓN VOLVER ARRIBA (SCROLL TO TOP)
-// ============================================
-const scrollToTopButton = document.getElementById('scrollToTop');
-
-// Mostrar/ocultar botón según el scroll
-let isScrolling;
-window.addEventListener('scroll', function() {
-    // Debounce para mejor rendimiento
-    window.clearTimeout(isScrolling);
-    
-    isScrolling = setTimeout(function() {
-        if (window.pageYOffset > 300) {
-            scrollToTopButton.classList.add('visible');
-        } else {
-            scrollToTopButton.classList.remove('visible');
-        }
-    }, 66); // ~15fps
-}, { passive: true });
-
-// Funcionalidad del botón
-if (scrollToTopButton) {
-    scrollToTopButton.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-        
-        // Establecer foco en el contenido principal
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.setAttribute('tabindex', '-1');
-            mainContent.focus();
-        }
-    });
-}
-
-// ============================================
-// FAQ EXPANDIBLE (ACCORDION)
+// FAQ ACCORDION
 // ============================================
 function toggleFAQ(button) {
-    const faqItem = button.parentElement;
-    const wasActive = faqItem.classList.contains('active');
-    
-    // Cerrar todas las preguntas
-    document.querySelectorAll('.faq-item').forEach(item => {
-        item.classList.remove('active');
-        item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+    const item = button.parentElement;
+    const wasActive = item.classList.contains('active');
+
+    document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('active');
+        const q = i.querySelector('.faq-question');
+        if (q) q.setAttribute('aria-expanded', 'false');
     });
-    
-    // Si no estaba activa, abrirla
+
     if (!wasActive) {
-        faqItem.classList.add('active');
+        item.classList.add('active');
         button.setAttribute('aria-expanded', 'true');
     }
 }
 
 // ============================================
-// SERVICIOS EXPANDIBLES
+// PRE-FILL SERVICE FROM CARD CTA
 // ============================================
-function toggleService(card) {
-    const wasActive = card.classList.contains('active');
-    
-    // Cerrar todas las tarjetas de servicio
-    document.querySelectorAll('.service-card').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Si no estaba activa, abrirla
-    if (!wasActive) {
-        card.classList.add('active');
+function prefillService(serviceValue) {
+    const select = document.getElementById('service');
+    if (select) {
+        select.value = serviceValue;
+        // Trigger a subtle visual cue
+        select.style.borderColor = 'rgba(255,255,255,0.6)';
+        setTimeout(() => { select.style.borderColor = ''; }, 1500);
+    }
+    // Scroll to contact form
+    const contact = document.getElementById('contacto');
+    if (contact) {
+        setTimeout(() => {
+            const top = contact.getBoundingClientRect().top + window.scrollY - 90;
+            window.scrollTo({ top, behavior: 'smooth' });
+        }, 100);
     }
 }
 
-// También permitir abrir/cerrar con Enter o Espacio
-document.addEventListener('DOMContentLoaded', function() {
-    const faqButtons = document.querySelectorAll('.faq-question');
-    
-    faqButtons.forEach(button => {
-        button.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleFAQ(this);
-            }
-        });
-    });
-});
-
 // ============================================
-// FORMULARIO DE CONTACTO CON VALIDACIÓN
+// CONTACT FORM
 // ============================================
 let lastSubmitTime = 0;
 
 function handleFormSubmit(event) {
     event.preventDefault();
-    
-    // Prevenir spam
+
     const now = Date.now();
     if (now - lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
-        showToast('Por favor espera unos segundos antes de enviar otro mensaje.', 'error');
+        showToast('Espera unos segundos antes de enviar otro mensaje.', 'error');
         return;
     }
-    
+
     const form = event.target;
-    const submitButton = form.querySelector('button[type="submit"]');
-    
-    // Obtener valores del formulario
-    const formData = {
+    const submitBtn = document.getElementById('submitBtn');
+
+    const data = {
         name: form.name.value.trim(),
-        email: form.email.value.trim(),
+        phone: form.phone ? form.phone.value.trim() : '',
         service: form.service.value,
         message: form.message.value.trim()
     };
-    
-    // Validación básica
-    if (!formData.name || !formData.email || !formData.message) {
-        showMessage('Por favor completa todos los campos requeridos.', 'error');
-        showToast('Completa todos los campos requeridos', 'error');
+
+    // Basic validation
+    if (!data.name || !data.message) {
+        showMessage('Por favor completa tu nombre y el mensaje.', 'error');
+        shakeElement(submitBtn);
         return;
     }
-    
-    // Validar email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-        showMessage('Por favor ingresa un email válido.', 'error');
-        showToast('Email no válido', 'error');
-        return;
+
+    // Disable button
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text').textContent = 'Preparando mensaje...';
     }
-    
-    // Deshabilitar botón mientras se procesa
-    submitButton.disabled = true;
-    submitButton.textContent = 'Enviando...';
-    
-    // Simular envío
+
     setTimeout(() => {
-        // Preparar mensaje de WhatsApp
-        const serviceName = formData.service ? 
-            form.service.options[form.service.selectedIndex].text : 
-            'No especificado';
-        
-        const whatsappMessage = `*Nuevo mensaje desde la web*
+        const serviceName = data.service
+            ? form.service.options[form.service.selectedIndex].text.replace(/[🔧🛡️💿🎧💾📡❓]\s*/g, '')
+            : 'No especificado';
 
-👤 *Nombre:* ${formData.name}
-📧 *Email:* ${formData.email}
-🔧 *Servicio:* ${serviceName}
+        const msg = [
+            `*Nuevo mensaje desde concordiadigital.com* 🌐`,
+            ``,
+            `👤 *Nombre:* ${data.name}`,
+            data.phone ? `📱 *Teléfono/WhatsApp:* ${data.phone}` : null,
+            `🔧 *Servicio:* ${serviceName}`,
+            ``,
+            `💬 *Mensaje:*`,
+            data.message
+        ].filter(Boolean).join('\n');
 
-💬 *Mensaje:*
-${formData.message}`;
-        
-        const whatsappURL = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
-        
-        showMessage('¡Mensaje preparado! Te redirigiremos a WhatsApp...', 'success');
-        showToast('¡Redirigiendo a WhatsApp!', 'success');
-        
-        // Actualizar tiempo del último envío
+        const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+        showMessage('¡Listo! Abriendo WhatsApp con tu mensaje...', 'success');
+        showToast('Redirigiendo a WhatsApp 🚀', 'success');
         lastSubmitTime = Date.now();
-        
-        // Redirigir a WhatsApp después de 1.5 segundos
+
         setTimeout(() => {
-            window.open(whatsappURL, '_blank');
+            window.open(url, '_blank');
             form.reset();
-            submitButton.disabled = false;
-            submitButton.textContent = 'Enviar Mensaje';
-            
-            // Limpiar mensaje después de redirección
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.querySelector('.btn-text').textContent = 'Enviar por WhatsApp';
+            }
             setTimeout(() => {
-                const formMessage = document.getElementById('formMessage');
-                if (formMessage) {
-                    formMessage.className = 'form-message';
-                }
-            }, 2000);
-        }, 1500);
-        
-    }, 1000);
+                const fm = document.getElementById('formMessage');
+                if (fm) fm.className = 'form-message';
+            }, 3000);
+        }, 1200);
+
+    }, 800);
 }
 
-function showMessage(message, type) {
-    const formMessage = document.getElementById('formMessage');
-    if (formMessage) {
-        formMessage.textContent = message;
-        formMessage.className = `form-message ${type}`;
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(() => {
-            formMessage.className = 'form-message';
-        }, 5000);
-    }
+function showMessage(msg, type) {
+    const el = document.getElementById('formMessage');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = `form-message ${type}`;
+    setTimeout(() => { el.className = 'form-message'; }, 5000);
 }
+
+function shakeElement(el) {
+    if (!el) return;
+    el.style.animation = 'shake 0.4s ease';
+    el.addEventListener('animationend', () => { el.style.animation = ''; }, { once: true });
+}
+
+// Inject shake keyframe
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }`;
+document.head.appendChild(shakeStyle);
 
 // ============================================
 // TOAST NOTIFICATIONS
@@ -381,393 +419,115 @@ function showMessage(message, type) {
 function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
-    
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
     toast.setAttribute('role', 'alert');
-    toast.setAttribute('aria-live', 'assertive');
-    
     container.appendChild(toast);
-    
-    // Trigger animation
-    setTimeout(() => toast.classList.add('show'), 100);
-    
-    // Remove after duration
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => toast.classList.add('show'));
+    });
+
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => toast.remove(), 350);
     }, CONFIG.TOAST_DURATION);
 }
 
 // ============================================
-// ANIMACIÓN DE NÚMEROS (ESTADÍSTICAS)
+// SCROLL-BASED NUMBER ANIMATION
 // ============================================
-function animateNumber(element, target, duration = 2000) {
-    const start = 0;
+function animateNumber(el, target, suffix = '', duration = 1800) {
     const increment = target / (duration / 16);
-    let current = start;
-    
+    let current = 0;
     const timer = setInterval(() => {
         current += increment;
         if (current >= target) {
-            element.textContent = target;
+            el.textContent = target + suffix;
             clearInterval(timer);
         } else {
-            element.textContent = Math.floor(current);
+            el.textContent = Math.floor(current) + suffix;
         }
     }, 16);
 }
 
-// ============================================
-// INTERSECTION OBSERVERS
-// ============================================
-function initializeIntersectionObservers() {
-    // Observer para estadísticas
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const numbers = entry.target.querySelectorAll('.stat-number');
-                numbers.forEach(num => {
-                    const text = num.textContent;
-                    if (text.includes('%')) {
-                        const value = parseInt(text);
-                        num.textContent = '0%';
-                        setTimeout(() => {
-                            animateNumber(num, value);
-                            setTimeout(() => {
-                                num.textContent = text;
-                            }, 2000);
-                        }, 300);
-                    } else if (text.includes('+')) {
-                        const value = parseInt(text.replace('+', ''));
-                        num.textContent = '0';
-                        setTimeout(() => {
-                            animateNumber(num, value);
-                            setTimeout(() => {
-                                num.textContent = '+' + value;
-                            }, 2000);
-                        }, 300);
-                    }
-                });
-                statsObserver.unobserve(entry.target);
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.querySelectorAll('.stat-number').forEach(num => {
+            const original = num.textContent;
+            if (original.includes('%')) {
+                const val = parseInt(original);
+                animateNumber(num, val, '%');
+            } else if (original.includes('/')) {
+                // Skip 24/7
+            } else if (original === '0') {
+                // Already 0, just pulse
+                num.style.transform = 'scale(1.2)';
+                setTimeout(() => { num.style.transform = ''; num.style.transition = 'transform 0.3s ease'; }, 300);
             }
         });
-    }, {
-        threshold: 0.5,
-        rootMargin: '0px'
+        statsObserver.unobserve(entry.target);
     });
+}, { threshold: 0.5 });
 
-    // Observar las estadísticas
-    const statsSection = document.querySelector('.dna-stats');
-    if (statsSection) {
-        statsObserver.observe(statsSection);
-    }
-    
-    // Observer para lazy loading de imágenes (si se agregan)
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            }
-        });
-    });
-    
-    // Observar imágenes lazy
-    const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-    lazyImages.forEach(img => {
-        if (!('loading' in HTMLImageElement.prototype)) {
-            imageObserver.observe(img);
-        }
-    });
-}
-
-// ============================================
-// DETECCIÓN DE RENDIMIENTO DEL DISPOSITIVO
-// ============================================
-function isLowEndDevice() {
-    // Detectar si es un dispositivo de bajo rendimiento
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    const isSaveData = connection && connection.saveData;
-    const isSlowConnection = connection && (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g');
-    const hasLowMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
-    const hasSlowCPU = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
-    
-    return isSaveData || isSlowConnection || hasLowMemory || hasSlowCPU;
-}
-
-// Ajustar animaciones según el rendimiento
-if (isLowEndDevice()) {
-    document.documentElement.classList.add('reduce-animations');
-    console.log('🔋 Modo de bajo rendimiento activado');
-}
-
-// ============================================
-// UTILIDADES DE RENDIMIENTO
-// ============================================
-
-// Debounce function
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Throttle function
-function throttle(func, limit) {
-    let inThrottle;
-    return function(...args) {
-        if (!inThrottle) {
-            func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-}
-
-// ============================================
-// PREVENCIÓN DE ERRORES
-// ============================================
-
-// Manejo global de errores
-window.addEventListener('error', function(e) {
-    console.error('Error capturado:', e.error);
-    // Podrías enviar esto a un servicio de logging
-});
-
-// Manejo de promesas rechazadas
-window.addEventListener('unhandledrejection', function(e) {
-    console.error('Promesa rechazada:', e.reason);
+document.addEventListener('DOMContentLoaded', () => {
+    const statsEl = document.querySelector('.dna-stats');
+    if (statsEl) statsObserver.observe(statsEl);
 });
 
 // ============================================
-// ANALYTICS Y TRACKING (OPCIONAL)
+// ONLINE / OFFLINE DETECTION
 // ============================================
-function trackEvent(category, action, label) {
-    // Implementar tracking si se usa Google Analytics, etc.
-    if (typeof gtag !== 'undefined') {
-        gtag('event', action, {
-            'event_category': category,
-            'event_label': label
-        });
-    }
-    
-    console.log(`📊 Event tracked: ${category} - ${action} - ${label}`);
-}
+window.addEventListener('online', () => showToast('Conexión restaurada ✅', 'success'));
+window.addEventListener('offline', () => showToast('Sin conexión a internet ⚠️', 'error'));
 
-// Track clicks en CTA buttons
-document.addEventListener('DOMContentLoaded', function() {
-    const ctaButtons = document.querySelectorAll('.cta-button');
-    ctaButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            trackEvent('CTA', 'click', this.textContent);
-        });
-    });
+// ============================================
+// KEYBOARD ACCESSIBILITY
+// ============================================
+document.addEventListener('keydown', e => {
+    if (e.key === 'Tab') document.body.classList.add('using-keyboard');
 });
+document.addEventListener('mousedown', () => document.body.classList.remove('using-keyboard'));
 
 // ============================================
-// ACCESIBILIDAD - FOCUS VISIBLE
-// ============================================
-let isUsingKeyboard = false;
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Tab') {
-        isUsingKeyboard = true;
-        document.body.classList.add('using-keyboard');
-    }
-});
-
-document.addEventListener('mousedown', function() {
-    isUsingKeyboard = false;
-    document.body.classList.remove('using-keyboard');
-});
-
-// ============================================
-// PWA - SERVICE WORKER (OPCIONAL)
-// ============================================
-/*
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('✅ Service Worker registrado:', registration);
-            })
-            .catch(error => {
-                console.log('❌ Error al registrar Service Worker:', error);
-            });
-    });
-}
-*/
-
-// ============================================
-// SHARE API (Compartir sitio web)
-// ============================================
-async function shareWebsite() {
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: 'Concordia Digital',
-                text: '¡Servicios técnicos profesionales en Concordia, Sinaloa!',
-                url: window.location.href
-            });
-            trackEvent('Social', 'share', 'Web Share API');
-        } catch (err) {
-            if (err.name !== 'AbortError') {
-                console.error('Error al compartir:', err);
-            }
-        }
-    } else {
-        // Fallback: copiar URL al clipboard
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            showToast('¡Enlace copiado al portapapeles!', 'success');
-        } catch (err) {
-            console.error('Error al copiar:', err);
-        }
-    }
-}
-
-// ============================================
-// DETECCIÓN DE CONEXIÓN
-// ============================================
-window.addEventListener('online', function() {
-    showToast('Conexión restaurada', 'success');
-});
-
-window.addEventListener('offline', function() {
-    showToast('Sin conexión a internet', 'error');
-});
-
-// ============================================
-// OPTIMIZACIÓN DE SCROLL
-// ============================================
-let ticking = false;
-let lastKnownScrollPosition = 0;
-
-function doSomethingOnScroll(scrollPos) {
-    // Actualizar header sticky, etc.
-    const header = document.querySelector('header');
-    if (header) {
-        if (scrollPos > 100) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    }
-}
-
-window.addEventListener('scroll', function() {
-    lastKnownScrollPosition = window.scrollY;
-
-    if (!ticking) {
-        window.requestAnimationFrame(function() {
-            doSomethingOnScroll(lastKnownScrollPosition);
-            ticking = false;
-        });
-        ticking = true;
-    }
-}, { passive: true });
-
-// ============================================
-// EASTER EGG - KONAMI CODE (OPCIONAL)
+// KONAMI CODE EASTER EGG 🎮
 // ============================================
 let konamiCode = [];
-const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-
-document.addEventListener('keydown', function(e) {
+const konamiPattern = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+document.addEventListener('keydown', e => {
     konamiCode.push(e.key);
     konamiCode = konamiCode.slice(-konamiPattern.length);
-    
     if (konamiCode.join(',') === konamiPattern.join(',')) {
-        showToast('🎉 ¡Has encontrado el código secreto! 🚀', 'success');
+        showToast('🎉 ¡Código secreto encontrado! Eres un experto.', 'success');
         document.body.style.transform = 'rotate(360deg)';
-        document.body.style.transition = 'transform 2s ease';
+        document.body.style.transition = 'transform 1.5s ease';
         setTimeout(() => {
             document.body.style.transform = '';
-        }, 2000);
+            document.body.style.transition = '';
+        }, 1600);
         konamiCode = [];
     }
 });
 
 // ============================================
-// CONSOLA - Mensaje para desarrolladores
+// DEVELOPER CONSOLE
 // ============================================
 function logWelcomeMessage() {
-    const styles = {
-        title: 'font-size: 20px; font-weight: bold; color: #00ff00;',
-        subtitle: 'font-size: 14px; color: #888;',
-        footer: 'font-size: 12px; color: #666;'
-    };
-    
-    console.log('%c¡Hola Desarrollador! 👋', styles.title);
-    console.log('%cSi encuentras algún bug o tienes sugerencias, ¡contáctanos!', styles.subtitle);
-    console.log('%cConcordia Digital - Hecho con ❤️ en Concordia, Sinaloa', styles.footer);
-    console.log('%c' + `
-    ╔═══════════════════════════════════════╗
-    ║   CONCORDIA DIGITAL - v2.0.0         ║
-    ║   Optimizado para rendimiento        ║
-    ║   y accesibilidad                    ║
-    ╚═══════════════════════════════════════╝
-    `, 'color: #00ff00; font-family: monospace;');
+    console.log('%c Concordia Digital v3.0 ', 'background:#fff;color:#000;font-weight:bold;font-size:14px;padding:4px 8px;border-radius:4px;');
+    console.log('%cHecho con ❤️ en Concordia, Sinaloa, México', 'color:#888;font-size:12px;');
 }
 
 // ============================================
-// TYPEWRITER HERO
+// GLOBAL EXPORTS
 // ============================================
-function initTypewriter() {
-    const el = document.getElementById('typewriter-text');
-    const cursor = document.querySelector('.typewriter-cursor');
-    if (!el) return;
-
-    const text = '👋🏼 Hola, ¿Qué tal? soy tu técnico de confianza en Concordia, Sinaloa, México. Ofrezco servicios básicos tecnológicos a domicilio, pensados para ayudarte sin que tengas que salir de casa ni "batallar" con la tecnología.';
-
-    let i = 0;
-    // Esperar a que la animación AOS del párrafo termine (~200ms delay + 800ms duración)
-    const startDelay = 1100;
-
-    setTimeout(() => {
-        function type() {
-            if (i < text.length) {
-                el.textContent += text.charAt(i);
-                i++;
-                // Velocidad variable: más rápido en espacios, normal en letras
-                const char = text.charAt(i);
-                const speed = (char === ' ' || char === ',') ? 30 : 45;
-                setTimeout(type, speed);
-            } else {
-                // Al terminar, ocultar el cursor parpadeante después de 2s
-                if (cursor) {
-                    setTimeout(() => {
-                        cursor.style.animation = 'none';
-                        cursor.style.opacity = '0';
-                    }, 2000);
-                }
-            }
-        }
-        type();
-    }, startDelay);
-}
-
-// ============================================
-// EXPORTAR FUNCIONES GLOBALES
-// ============================================
-window.concordiaDigital = {
-    toggleMenu,
-    closeMenu,
-    toggleFAQ,
-    handleFormSubmit,
-    showToast,
-    shareWebsite,
-    trackEvent
-};
+window.toggleMenu = toggleMenu;
+window.closeMenu = closeMenu;
+window.toggleFAQ = toggleFAQ;
+window.toggleService = toggleService;
+window.prefillService = prefillService;
+window.handleFormSubmit = handleFormSubmit;
+window.showToast = showToast;
+window.closePromoBar = closePromoBar;
