@@ -21,6 +21,7 @@ function initializeApp() {
     initSmoothScroll();
     initReadingProgress();
     initQuickChips();
+    initPricesCarousel();
     logWelcomeMessage();
 }
 
@@ -174,6 +175,47 @@ function initSmoothScroll() {
 // ============================================
 // QUICK CHIPS → scroll to service card
 // ============================================
+let pricesIndex = 0;
+
+function updatePricesCarousel() {
+    const track = document.getElementById('pricesTrack');
+    if (!track) return;
+    const cards = track.querySelectorAll('.price-card');
+    track.style.transform = `translateX(-${pricesIndex * 100}%)`;
+
+    const dots = document.querySelectorAll('.prices-dot');
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === pricesIndex));
+}
+
+function scrollPrices(direction) {
+    const track = document.getElementById('pricesTrack');
+    if (!track) return;
+    const total = track.querySelectorAll('.price-card').length;
+    pricesIndex = (pricesIndex + direction + total) % total;
+    updatePricesCarousel();
+}
+
+function goToPrice(index) {
+    pricesIndex = index;
+    updatePricesCarousel();
+}
+
+function initPricesCarousel() {
+    const track = document.getElementById('pricesTrack');
+    const dotsWrap = document.getElementById('pricesDots');
+    if (!track || !dotsWrap) return;
+    const total = track.querySelectorAll('.price-card').length;
+
+    dotsWrap.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'prices-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Ver precio ${i + 1}`);
+        dot.addEventListener('click', () => goToPrice(i));
+        dotsWrap.appendChild(dot);
+    }
+}
+
 function initQuickChips() {
     document.querySelectorAll('.quick-chip').forEach(chip => {
         chip.addEventListener('click', function (e) {
@@ -278,6 +320,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// ============================================
+// UBICACIÓN (mapa expandible)
+// ============================================
+function toggleLocation(el) {
+    const isActive = el.classList.contains('active');
+    el.classList.toggle('active');
+    el.setAttribute('aria-expanded', !isActive);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const locEl = document.querySelector('.channel-loc');
+    if (locEl) {
+        locEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleLocation(this);
+            }
+        });
+    }
+});
+
+window.toggleLocation = toggleLocation;
 
 // ============================================
 // FAQ ACCORDION
