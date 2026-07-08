@@ -640,6 +640,7 @@ nav { display: flex; gap: 0.25rem; align-items: center; }
 .prices-viewport {
     flex: 1;
     overflow: hidden;
+    touch-action: pan-y;
 }
 
 .prices-track {
@@ -700,6 +701,7 @@ nav { display: flex; gap: 0.25rem; align-items: center; }
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
 }
 .prices-arrow:hover { background: var(--white); color: var(--black); }
 
@@ -712,6 +714,7 @@ nav { display: flex; gap: 0.25rem; align-items: center; }
     background: rgba(255,255,255,0.2);
     border: none; cursor: pointer; padding: 0;
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
 }
 .prices-dot.active { background: var(--white); width: 22px; border-radius: 999px; }
 
@@ -722,6 +725,14 @@ nav { display: flex; gap: 0.25rem; align-items: center; }
 
 @media (max-width: 640px) {
     .price-card { padding: 1.75rem; }
+    .prices-carousel-wrap { gap: 0.5rem; }
+    .prices-arrow { width: 38px; height: 38px; }
+    .price-amount { font-size: 2rem; }
+}
+
+@media (max-width: 400px) {
+    .price-card h3 { font-size: 1.1rem; }
+    .price-desc { font-size: 0.82rem; }
 }
 
 /* ====== HOW IT WORKS ====== */
@@ -1196,6 +1207,8 @@ footer {
     .testimonials-grid { grid-template-columns: 1fr; }
 
     .faq-section { padding: 4rem 1.25rem; }
+
+    .prices { padding: 4rem 1.25rem; }
 
     .contact { padding: 4rem 1.25rem; }
     .contact-inner { gap: 2.5rem; }

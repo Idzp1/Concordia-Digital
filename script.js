@@ -214,6 +214,44 @@ function initPricesCarousel() {
         dot.addEventListener('click', () => goToPrice(i));
         dotsWrap.appendChild(dot);
     }
+
+    // Soporte de swipe táctil (iOS / Android)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+
+    track.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isSwiping = true;
+        track.style.transition = 'none';
+    }, { passive: true });
+
+    track.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        const deltaX = e.touches[0].clientX - touchStartX;
+        const deltaY = e.touches[0].clientY - touchStartY;
+        // Solo tomamos el gesto si es principalmente horizontal
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            const percent = (deltaX / track.parentElement.getBoundingClientRect().width) * 100;
+            track.style.transform = `translateX(calc(-${pricesIndex * 100}% + ${percent}%))`;
+        }
+    }, { passive: true });
+
+    track.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        track.style.transition = '';
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        const threshold = 45; // px mínimos para considerar swipe
+        if (deltaX > threshold) {
+            scrollPrices(-1);
+        } else if (deltaX < -threshold) {
+            scrollPrices(1);
+        } else {
+            updatePricesCarousel(); // regresa a su posición si no fue suficiente
+        }
+    });
 }
 
 function initQuickChips() {
