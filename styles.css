@@ -285,7 +285,7 @@ header.scrolled {
 .menu-toggle {
     display: none; flex-direction: column; gap: 5px;
     cursor: pointer; background: transparent; border: none;
-    padding: 0.5rem; z-index: 101;
+    padding: 0.5rem; z-index: 1001;
     -webkit-tap-highlight-color: transparent;
 }
 .menu-toggle span {
@@ -1167,15 +1167,24 @@ footer {
     .menu-toggle { display: flex; }
     
     nav {
-        position: fixed; inset: 0; right: -100%;
+        position: fixed; top: 0; left: auto; bottom: 0; right: -100%;
         width: 75%; max-width: 280px; height: 100vh;
         background: var(--gray-dark); flex-direction: column;
         padding: 5.5rem 2rem 2rem; gap: 0.5rem;
         border-left: 1px solid rgba(255,255,255,0.1);
         transition: right 0.35s ease;
         overflow-y: auto;
+        z-index: 1000;
     }
     nav.active { right: 0; }
+
+    .nav-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+    .nav-overlay.active { display: block; }
     
     .nav-link {
         font-size: 0.9rem; padding: 0.875rem 1rem;

@@ -297,10 +297,12 @@ function highlightServiceByType(serviceType) {
 function toggleMenu() {
     const nav = document.getElementById('mainNav');
     const toggle = document.querySelector('.menu-toggle');
+    const overlay = document.getElementById('navOverlay');
     const isActive = nav.classList.contains('active');
 
     nav.classList.toggle('active');
     toggle.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
     toggle.setAttribute('aria-expanded', !isActive);
     document.body.style.overflow = isActive ? '' : 'hidden';
 }
@@ -308,9 +310,11 @@ function toggleMenu() {
 function closeMenu() {
     const nav = document.getElementById('mainNav');
     const toggle = document.querySelector('.menu-toggle');
+    const overlay = document.getElementById('navOverlay');
     if (!nav) return;
     nav.classList.remove('active');
     toggle.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
     toggle.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
 }
