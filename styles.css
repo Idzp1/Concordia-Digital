@@ -37,6 +37,13 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* Quita el destello gris al tocar en iOS/Android y evita el doble-tap-zoom
+   en todos los elementos interactivos personalizados. */
+a, button, .service-card, .channel-loc, .faq-question, .quick-chip, .nav-link {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -151,6 +158,7 @@ body {
     display: flex; align-items: center; justify-content: center;
     gap: 0.5rem; font-size: 0.72rem;
     color: var(--gray-light); letter-spacing: 0.04em;
+    padding: 0 0.75rem;
 }
 .clock-icon { width: 13px; height: 13px; opacity: 0.7; }
 .status-indicator {
@@ -169,7 +177,9 @@ body {
 
 /* ====== FLOATING BUTTONS ====== */
 .float-group {
-    position: fixed; bottom: 28px; right: 24px;
+    position: fixed;
+    bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+    right: calc(24px + env(safe-area-inset-right, 0px));
     z-index: 1001;
     display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
@@ -252,16 +262,32 @@ header {
     padding: 1rem 2rem;
     display: flex; justify-content: space-between; align-items: center;
     z-index: 998;
-    backdrop-filter: blur(16px);
-    background: rgba(10,10,10,0.85);
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    transition: top 0.3s ease, padding 0.3s ease, background 0.3s ease;
+    transition: top 0.3s ease, padding 0.3s ease;
     top: 64px; /* promo + hours */
 }
+/* El blur/background van en un pseudo-elemento para que el header NO tenga
+   backdrop-filter directamente: un filter/backdrop-filter en un ancestro
+   convierte a ese ancestro en el "containing block" de sus hijos con
+   position:fixed. Eso rompía el menú (nav) en móvil, sobre todo en
+   Android Chrome, porque el menú quedaba anclado al header en vez de
+   pantalla completa. Con el efecto en ::before, el header deja de ser
+   ese contenedor y el menú vuelve a posicionarse respecto al viewport. */
+header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(10,10,10,0.85);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    z-index: -1;
+    transition: background 0.3s ease;
+}
 header.scrolled {
-    background: rgba(10,10,10,0.97);
     border-bottom-color: rgba(255,255,255,0.1);
     padding: 0.75rem 2rem;
+}
+header.scrolled::before {
+    background: rgba(10,10,10,0.97);
 }
 
 .logo {
@@ -287,6 +313,8 @@ header.scrolled {
     cursor: pointer; background: transparent; border: none;
     padding: 0.5rem; z-index: 1001;
     -webkit-tap-highlight-color: transparent;
+    min-width: 44px; min-height: 44px;
+    align-items: center; justify-content: center;
 }
 .menu-toggle span {
     width: 24px; height: 2px;
@@ -318,6 +346,7 @@ nav { display: flex; gap: 0.25rem; align-items: center; }
 /* ====== HERO ====== */
 .hero {
     min-height: 100vh;
+    min-height: 100dvh; /* evita saltos por la barra de direcciones en móvil */
     display: flex; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
     padding: 8rem 2rem 5rem;
@@ -733,6 +762,15 @@ nav { display: flex; gap: 0.25rem; align-items: center; }
 @media (max-width: 400px) {
     .price-card h3 { font-size: 1.1rem; }
     .price-desc { font-size: 0.82rem; }
+    .prices-arrow { width: 42px; height: 42px; } /* min. táctil recomendado ~44px */
+}
+
+@media (max-width: 380px) {
+    .hours-text {
+        overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; max-width: 150px;
+    }
+    .status-indicator { flex-shrink: 0; }
 }
 
 /* ====== HOW IT WORKS ====== */
@@ -1168,12 +1206,15 @@ footer {
     
     nav {
         position: fixed; top: 0; left: auto; bottom: 0; right: -100%;
-        width: 75%; max-width: 280px; height: 100vh;
+        width: 75%; max-width: 280px;
+        height: 100vh;
+        height: 100dvh; /* alto real de pantalla en móvil, sin recortes */
         background: var(--gray-dark); flex-direction: column;
         padding: 5.5rem 2rem 2rem; gap: 0.5rem;
         border-left: 1px solid rgba(255,255,255,0.1);
         transition: right 0.35s ease;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         z-index: 1000;
     }
     nav.active { right: 0; }
@@ -1223,11 +1264,24 @@ footer {
     .contact-inner { gap: 2.5rem; }
     .contact-form { padding: 1.75rem; }
 
+    /* iOS Safari hace zoom automático al enfocar inputs con letra < 16px */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;
+    }
+
     .footer-inner { grid-template-columns: 1fr; }
 
-    .float-group { bottom: 20px; right: 16px; }
+    .float-group {
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+    }
     .whatsapp-float, .messenger-float { width: 52px; height: 52px; }
-    .scroll-to-top { bottom: 152px; right: 16px; }
+    .scroll-to-top {
+        bottom: calc(152px + env(safe-area-inset-bottom, 0px));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+    }
 
     .top-promo-bar { padding: 0.4rem 0.75rem; }
     .promo-text { display: none; }
