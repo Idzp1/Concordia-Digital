@@ -1200,7 +1200,7 @@ footer {
 }
 
 @media (max-width: 768px) {
-    header { padding: 0.875rem 1.25rem; top: 64px; }
+    header { padding: 0.875rem 1.5rem; top: 64px; }
     
     .menu-toggle { display: flex; }
     
@@ -1228,41 +1228,50 @@ footer {
     .nav-overlay.active { display: block; }
     
     .nav-link {
-        font-size: 0.9rem; padding: 0.875rem 1rem;
+        font-size: 0.9rem; padding: 1rem 1.1rem;
         min-height: 48px; display: flex; align-items: center;
     }
+    nav { gap: 0.75rem; }
     .nav-cta { margin-left: 0; margin-top: 0.5rem; justify-content: center; }
 
-    .hero { padding: 7rem 1.25rem 4rem; }
+    .hero { padding: 7rem 1.5rem 4rem; }
     .hero h1 { font-size: clamp(2.2rem, 9vw, 4rem); }
-    .hero-actions { flex-direction: column; align-items: center; }
+    .hero-actions { flex-direction: column; align-items: center; gap: 0.85rem; }
     .cta-button { width: 100%; justify-content: center; }
+    .hero-trust { gap: 1rem 1.5rem; }
 
     .quick-chip { padding: 1rem; font-size: 0.7rem; }
 
-    .services { padding: 4rem 1.25rem; }
-    .services-grid { grid-template-columns: 1fr; }
+    .services { padding: 4rem 1.5rem; }
+    .services-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+    .service-features { gap: 0.55rem; }
+    .service-features li { padding: 0.3rem 0; }
 
-    .steps-container { flex-direction: column; align-items: center; gap: 2rem; }
+    .steps-container { flex-direction: column; align-items: center; gap: 2.25rem; }
     .step { max-width: 100%; min-width: 0; padding: 0; }
     .step-connector { width: 2px; height: 30px; margin: 0; }
 
-    .how-it-works { padding: 4rem 1.25rem; }
+    .how-it-works { padding: 4rem 1.5rem; }
 
-    .tech-dna { padding: 4rem 1.25rem; }
+    .tech-dna { padding: 4rem 1.5rem; }
     .tech-dna-container { gap: 2.5rem; }
-    .dna-stats { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .dna-stats { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .stat-item { padding: 1.75rem 1.5rem; }
 
-    .testimonials-section { padding: 4rem 1.25rem; }
-    .testimonials-grid { grid-template-columns: 1fr; }
+    .testimonials-section { padding: 4rem 1.5rem; }
+    .testimonials-grid { grid-template-columns: 1fr; gap: 1.75rem; }
 
-    .faq-section { padding: 4rem 1.25rem; }
+    .faq-section { padding: 4rem 1.5rem; }
+    .faq-container { gap: 1rem; }
+    .faq-question { padding: 1.375rem 1.5rem; }
 
-    .prices { padding: 4rem 1.25rem; }
+    .prices { padding: 4rem 1.5rem; }
 
-    .contact { padding: 4rem 1.25rem; }
-    .contact-inner { gap: 2.5rem; }
-    .contact-form { padding: 1.75rem; }
+    .contact { padding: 4rem 1.5rem; }
+    .contact-inner { gap: 3rem; }
+    .contact-form { padding: 2rem 1.75rem; }
+    .contact-channels { gap: 1rem; }
+    .form-group { margin-bottom: 1.5rem; }
 
     /* iOS Safari hace zoom automático al enfocar inputs con letra < 16px */
     .form-group input,
@@ -1271,7 +1280,8 @@ footer {
         font-size: 16px;
     }
 
-    .footer-inner { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; gap: 2.25rem; }
+    .footer-links, .footer-contact { gap: 0.9rem; }
 
     .float-group {
         bottom: calc(20px + env(safe-area-inset-bottom, 0px));
@@ -1288,10 +1298,15 @@ footer {
     .promo-emoji { font-size: 1.1rem; }
 }
 
+@media (max-width: 600px) {
+    .dna-stats { grid-template-columns: 1fr; gap: 1rem; }
+    .stat-item { padding: 1.5rem; }
+}
+
 @media (max-width: 480px) {
-    .hero-trust { flex-direction: column; align-items: center; gap: 0.6rem; }
+    .hero-trust { flex-direction: column; align-items: center; gap: 0.85rem; }
     .dna-stats { grid-template-columns: 1fr; }
-    .services-cta-block { flex-direction: column; }
+    .services-cta-block { flex-direction: column; gap: 1.25rem; }
     .section-title { font-size: clamp(1.7rem, 7vw, 2.5rem); }
     .toast-container { top: 10px; right: 10px; left: 10px; }
     .toast { max-width: 100%; }
